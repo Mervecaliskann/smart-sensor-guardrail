@@ -1,0 +1,12 @@
+# Sanal ortam
+venv/
+
+# Sır dosyası (Kesinlikle gitmemeli!)
+.env
+
+# Python geçici dosyaları
+__pycache__/
+*.pyc
+
+# Veri dosyaları
+*.csv
