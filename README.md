@@ -1,35 +1,46 @@
-# 🛡️ Smart Sensor Data Quality Guardrail
+# 🛡️ Akıllı Sensör Veri Kalitesi Kalkanı (Smart Sensor Data Quality Guardrail)
 
-Ensuring AI reliability in smart manufacturing by validating industrial sensor data before it reaches the model. This project addresses the "Data Validation" requirements in modern Industry 4.0 pipelines.
+Akıllı üretim hatlarında, endüstriyel sensör verilerini yapay zeka modeline ulaşmadan önce doğrulayarak yapay zeka güvenilirliğini sağlayan sistem. Bu proje, modern Endüstri 4.0 boru hatlarındaki **"Veri Doğrulama" (Data Validation)** gereksinimlerini karşılar.
 
-## 🚀 Overview
-In industrial environments, sensor failures (frozen sensors, spikes, or drift) can lead to catastrophic AI predictions. This "Guardrail" system acts as a statistical security layer that filters raw data and provides AI-powered quality insights.
-
-## 🧠 Statistical Logic
-The system employs two main validation layers:
-1. **Physical Range Checks:** Validates if readings are within the equipment's physical operating limits.
-2. **Statistical Outlier Detection:** Uses the **Z-Score** method to identify technical anomalies that fall outside the 3-sigma rule of the normal distribution.
-
-$$Z = \frac{x - \mu}{\sigma}$$
-
-*Where $x$ is the reading, $\mu$ is the mean, and $\sigma$ is the standard deviation.*
-
-## 📊 Features
-- **Real-time Validation:** Instant checks for incoming sensor streams.
-- **Statistical Dashboard:** Visualizing Z-Score hits and range violations.
-- **AI Quality Reports:** GPT-4o-mini interprets statistical errors into actionable engineering advice.
-
-## 🛠️ Tech Stack
-- **Languages:** Python (OOP)
-- **Statistics/Data:** NumPy, Pandas, Scikit-learn
-- **Interface:** Streamlit
-- **LLM Integration:** OpenAI API
-
-## 📂 Project Structure
-- `src/validator.py`: Core statistical logic (Z-Score & Ranges).
-- `src/generator.py`: Simulator for "dirty" industrial data.
-- `src/describer.py`: AI-powered data quality reporting.
-- `app.py`: Streamlit-based monitoring dashboard.
+## 🚀 Proje Özeti
+Endüstriyel ortamlarda sensör arızaları (donmuş sensörler, ani sıçramalar veya veri kayması) felaket niteliğinde yanlış AI tahminlerine yol açabilir. Bu "Koruma Kalkanı" (Guardrail) sistemi, ham veriyi filtreleyen ve yapay zeka destekli kalite içgörüleri sağlayan istatistiksel bir güvenlik katmanı görevi görür.
 
 ---
-*Developed as part of an industrial AI portfolio focusing on smart manufacturing and data integrity.*
+
+## 📊 Sistem Çıktıları ve Analiz
+
+Sistem, gelen veri akışındaki anormallikleri anında yakalar ve mühendisler için detaylı bir rapor oluşturur.
+
+### 1. İstatistiksel Hata Tespiti (Z-Skoru ve Aralık Kontrolü)
+*Aşağıdaki grafikte, sisteme bilerek enjekte edilen 180°C'lik ani sıcaklık artışının (spike) hem fiziksel aralık dışı (Physical Range Violation) hem de istatistiksel bir aykırı değer (Z-Score Outlier) olarak nasıl yakalandığı görülmektedir.*
+
+![Dashboard Grafiği](assets/dashboard_preview.png)
+
+### 2. Yapay Zeka Destekli Veri Kalite Raporu
+*GPT-4o-mini, tespit edilen bu istatistiksel hataların makine öğrenmesi modeli üzerindeki potansiyel etkilerini (Bias, Overfitting riski) analiz eder ve veriyi "GÜVENSİZ" (UNSAFE) olarak sınıflandırır.*
+
+![AI Raporu](assets/dashboard_preview2.png)
+
+---
+
+## 🧠 İstatistiksel Mantık (DSM 5001 Temelli)
+Sistem iki ana doğrulama katmanı kullanır:
+1. **Fiziksel Aralık Kontrolleri:** Okumaların ekipmanın fiziksel çalışma limitleri içinde olup olmadığını doğrular (Örn: 0-150°C arası).
+2. **İstatistiksel Aykırı Değer Tespiti:** Normal dağılımın 3-sigma kuralının dışına düşen teknik anormallikleri belirlemek için **Z-Skoru** yöntemini kullanır.
+
+**Formül:**
+$$Z = \frac{x - \mu}{\sigma}$$
+
+*Burada $x$ okunan sensör değeri, $\mu$ (mu) ortalama ve $\sigma$ (sigma) standart sapmadır.*
+
+## 🛠️ Teknoloji Yığını
+- **Dil:** Python (OOP Prensipleri)
+- **İstatistik/Veri:** NumPy, Pandas, Scikit-learn
+- **Arayüz:** Streamlit
+- **LLM Entegrasyonu:** OpenAI API (GPT-4o-mini)
+
+## 📂 Proje Yapısı
+- `src/validator.py`: Temel istatistiksel mantık (Z-Skoru ve Aralıklar).
+- `src/generator.py`: "Kirli" endüstriyel veri simülatörü.
+- `src/describer.py`: Yapay zeka destekli veri kalitesi raporlama.
+- `app.py`: Streamlit tabanlı izleme paneli.
