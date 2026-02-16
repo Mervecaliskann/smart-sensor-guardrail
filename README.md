@@ -1,46 +1,49 @@
-# 🛡️ Akıllı Sensör Veri Kalitesi Kalkanı (Smart Sensor Data Quality Guardrail)
+# 🛡️ Smart Sensor Data Quality Guardrail
 
-Akıllı üretim hatlarında, endüstriyel sensör verilerini yapay zeka modeline ulaşmadan önce doğrulayarak yapay zeka güvenilirliğini sağlayan sistem. Bu proje, modern Endüstri 4.0 boru hatlarındaki **"Veri Doğrulama" (Data Validation)** gereksinimlerini karşılar.
+A professional data validation system for smart factories. This tool checks industrial sensor data (Temperature, Pressure, Vibration) before it goes to AI models. It helps meet **"Data Validation"** requirements for Industry 4.0.
 
-## 🚀 Proje Özeti
-Endüstriyel ortamlarda sensör arızaları (donmuş sensörler, ani sıçramalar veya veri kayması) felaket niteliğinde yanlış AI tahminlerine yol açabilir. Bu "Koruma Kalkanı" (Guardrail) sistemi, ham veriyi filtreleyen ve yapay zeka destekli kalite içgörüleri sağlayan istatistiksel bir güvenlik katmanı görevi görür.
-
----
-
-## 📊 Sistem Çıktıları ve Analiz
-
-Sistem, gelen veri akışındaki anormallikleri anında yakalar ve mühendisler için detaylı bir rapor oluşturur.
-
-### 1. İstatistiksel Hata Tespiti (Z-Skoru ve Aralık Kontrolü)
-*Aşağıdaki grafikte, sisteme bilerek enjekte edilen 180°C'lik ani sıcaklık artışının (spike) hem fiziksel aralık dışı (Physical Range Violation) hem de istatistiksel bir aykırı değer (Z-Score Outlier) olarak nasıl yakalandığı görülmektedir.*
-
-![Dashboard Grafiği](assets/dashboard_preview.png)
-
-### 2. Yapay Zeka Destekli Veri Kalite Raporu
-*GPT-4o-mini, tespit edilen bu istatistiksel hataların makine öğrenmesi modeli üzerindeki potansiyel etkilerini (Bias, Overfitting riski) analiz eder ve veriyi "GÜVENSİZ" (UNSAFE) olarak sınıflandırır.*
-
-![AI Raporu](assets/dashboard_preview2.png)
+## 🚀 Project Overview
+In factories, sensors can sometimes give wrong data (like a sudden 180°C jump). If this "dirty" data goes into an AI model, the model will make wrong decisions. This project creates a "Guardrail" (safety layer) to find these errors using statistics and explain them using AI.
 
 ---
 
-## 🧠 İstatistiksel Mantık (DSM 5001 Temelli)
-Sistem iki ana doğrulama katmanı kullanır:
-1. **Fiziksel Aralık Kontrolleri:** Okumaların ekipmanın fiziksel çalışma limitleri içinde olup olmadığını doğrular (Örn: 0-150°C arası).
-2. **İstatistiksel Aykırı Değer Tespiti:** Normal dağılımın 3-sigma kuralının dışına düşen teknik anormallikleri belirlemek için **Z-Skoru** yöntemini kullanır.
+## 📊 System Dashboard & AI Insights
 
-**Formül:**
+The system monitors data in real-time and creates technical reports for engineers.
+
+### 1. Statistical Error Detection
+*The chart below shows a fake 180°C spike. The system successfully found this as a "Physical Range Violation" and a "Z-Score Outlier".*
+
+![Dashboard Graph](assets/dashboard_preview.png)
+
+### 2. AI-Powered Quality Report
+*The AI (GPT-4o-mini) analyzes the errors and explains the risks (like Bias or Overfitting). It classifies the data as "UNSAFE" for the model.*
+
+![AI Diagnostic Report](assets/dashboard_preview2.png)
+
+---
+
+## 🧠 Statistical Logic
+The system uses a mathematical method called the **Z-Score** to find anomalies that do not follow the normal distribution.
+
+**The Formula:**
+
 $$Z = \frac{x - \mu}{\sigma}$$
 
-*Burada $x$ okunan sensör değeri, $\mu$ (mu) ortalama ve $\sigma$ (sigma) standart sapmadır.*
+* **x**: The raw sensor reading.
+* **μ (mu)**: The average (mean) of the data.
+* **σ (sigma)**: The standard deviation.
 
-## 🛠️ Teknoloji Yığını
-- **Dil:** Python (OOP Prensipleri)
-- **İstatistik/Veri:** NumPy, Pandas, Scikit-learn
-- **Arayüz:** Streamlit
-- **LLM Entegrasyonu:** OpenAI API (GPT-4o-mini)
+If the **Z-Score** is higher than 3, the system marks it as an error.
 
-## 📂 Proje Yapısı
-- `src/validator.py`: Temel istatistiksel mantık (Z-Skoru ve Aralıklar).
-- `src/generator.py`: "Kirli" endüstriyel veri simülatörü.
-- `src/describer.py`: Yapay zeka destekli veri kalitesi raporlama.
-- `app.py`: Streamlit tabanlı izleme paneli.
+## 🛠️ Tech Stack
+- **Language:** Python (OOP Principles)
+- **Data/Stats:** NumPy, Pandas, Scikit-learn
+- **Dashboard:** Streamlit
+- **AI Integration:** OpenAI API (GPT-4o-mini)
+
+## 📂 Project Structure
+- `src/validator.py`: Statistical checks (Z-Score & Ranges).
+- `src/generator.py`: Simulator for "dirty" industrial data.
+- `src/describer.py`: AI data quality reporting.
+- `app.py`: Main dashboard application.
