@@ -1,30 +1,43 @@
 """
-[TR] İstatistiksel veri hatalarını analiz eder ve anlamlı raporlar sunar.
-[EN] Analyzes statistical data errors and provides meaningful reports.
+[TR] Kural tabanlı kararı LLM ile açıklar. Kararı LLM vermez, değiştiremez.
+[EN] Uses an LLM to explain the rule-based verdict. The LLM does not make or change the verdict.
 """
+import json
 import os
-from openai import OpenAI
+
 from dotenv import load_dotenv
 
+
+def build_prompt(summary):
+    return f"""You are a Data Quality Engineer at a smart factory.
+Automated checks were run on a temperature sensor stream:
+- range: physical limit check (0-150 °C)
+- robust_z: modified Z-score with median/MAD, |z| > 3.5
+- frozen: value unchanged for >= 10 consecutive readings (stuck sensor)
+
+Results (JSON):
+{json.dumps(summary, indent=2)}
+
+The verdict "{summary['verdict']}" was decided by a fixed rule ({summary['verdict_rule']}).
+It is final. Do NOT change, question or re-decide it.
+Explain in a few short paragraphs what the flagged rows likely mean physically,
+how they would affect an ML model trained or run on this data, and what to do next."""
+
+
 class DataQualityDescriber:
-    def __init__(self):
+    def __init__(self, model="gpt-4o-mini"):
         load_dotenv()
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise RuntimeError("OPENAI_API_KEY is not set (.env)")
+        from openai import OpenAI
+        self.client = OpenAI(api_key=api_key)
+        self.model = model
 
-    def describe_errors(self, range_errors, z_errors):
-        """[TR] Hata raporlarını yorumlar. [EN] Interprets error reports."""
-        prompt = f"""
-        You are a Data Quality Engineer at a smart factory. 
-        A sensor validation check has been performed:
-        - Out-of-range errors: {range_errors}
-        - Z-Score outliers (3-sigma): {z_errors}
-
-        Explain the potential impact of these data quality issues on a machine learning model.
-        Suggest if the data is 'SAFE' or 'UNSAFE' for training/inference.
-        """
-        
+    def explain(self, summary):
+        """[TR] Kararı açıklar.  [EN] Explains the verdict."""
         response = self.client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}]
+            model=self.model,
+            messages=[{"role": "user", "content": build_prompt(summary)}],
         )
         return response.choices[0].message.content

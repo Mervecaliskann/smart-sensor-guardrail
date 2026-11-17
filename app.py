@@ -1,37 +1,34 @@
+"""
+[TR] İnce Streamlit arayüzü; tüm hesaplama src.pipeline içinde.
+[EN] Thin Streamlit UI; all computation lives in src.pipeline.
+"""
 import streamlit as st
-import pandas as pd
-from src.generator import FaultyDataGenerator
-from src.validator import SensorValidator
-from src.describer import DataQualityDescriber
+
+from src.pipeline import CHECK_LABELS, run_pipeline
 
 st.set_page_config(page_title="Sensor Quality Guardrail", layout="wide")
 st.title("🛡️ Smart Sensor Data Quality Guardrail")
 
-# 1. Veri Üretimi
-gen = FaultyDataGenerator()
-df = gen.generate_data()
+result = run_pipeline()
 
 st.subheader("📡 Incoming Raw Sensor Stream")
-st.line_chart(df)
+st.line_chart(result.data)
 
-# 2. Validasyon Kuralları
-thresholds = {'temperature': {'min': 0, 'max': 150}}
-validator = SensorValidator(thresholds)
+st.subheader("🔍 Checks")
+cols = st.columns(len(CHECK_LABELS))
+for col, (check, label) in zip(cols, CHECK_LABELS.items()):
+    col.metric(label, int(result.flags[check].sum()))
 
-if st.button("🔍 Validate Data Quality"):
-    # İstatistiksel kontroller
-    range_hits = validator.check_ranges(df)
-    z_hits = validator.check_z_scores(df)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Physical Range Violations", range_hits['temperature'])
-    with col2:
-        st.metric("Statistical Outliers (Z-Score)", z_hits['temperature'])
+st.caption("Evaluation against the generator's ground-truth labels")
+st.dataframe(result.evaluation)
 
-    # 3. AI Yorumu
-    describer = DataQualityDescriber()
-    with st.spinner("AI is evaluating data reliability..."):
-        report = describer.describe_errors(range_hits, z_hits)
-        st.info("📝 AI Data Quality Report:")
-        st.write(report)
+v = result.verdict
+(st.error if v.label == "UNSAFE" else st.success)(f"Verdict: **{v.label}** — {v.reason}")
+
+if st.button("📝 Explain with AI"):
+    try:
+        from src.describer import DataQualityDescriber
+        with st.spinner("AI is writing the explanation..."):
+            st.write(DataQualityDescriber().explain(result.summary()))
+    except Exception as exc:  # missing key, network, quota ...
+        st.warning(f"AI explanation unavailable: {exc}")
